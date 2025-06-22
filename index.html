@@ -206,22 +206,7 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        // Importa as funções necessárias do Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Variáveis globais para Firebase (fornecidas pelo ambiente Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        // IMPORTANTE: Se você estiver hospedando este blog fora do ambiente Canvas (ex: GitHub Pages),
-        // VOCÊ PRECISA SUBSTITUIR O `{}` ABAIXO PELA CONFIGURAÇÃO REAL DO SEU PROJETO FIREBASE.
-        // Você pode encontrar essa configuração em seu console do Firebase:
-        // Console do Firebase -> Seu Projeto -> Configurações do Projeto (ícone de engrenagem)
-        // -> Seus aplicativos -> Selecione seu aplicativo web (o ícone `</>`) -> Configuração.
-        // Exemplo (descomente e preencha com seus dados, removendo o `typeof __firebase_config...`):
-        /*
-        const firebaseConfig = {// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyA38qOyovPWW3o8KGwKrOKGBNp-vcBgQ8c",
   authDomain: "k-jluzcameraopiniao.firebaseapp.com",
   projectId: "k-jluzcameraopiniao",
@@ -230,6 +215,10 @@ const firebaseConfig = {
   appId: "1:226870511707:web:e40e28dc2f9ee3a385577e",
   measurementId: "G-P1CCXSSKHM"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 };
 
 // Initialize Firebase
