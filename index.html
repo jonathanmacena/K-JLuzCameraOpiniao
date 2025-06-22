@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Blog de Filmes e Séries</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis CSS para Cores Personalizáveis */
+        :root {
+            --primary-color: #6366f1; /* Cor principal (ex: botões, ratings) */
+            --primary-hover-color: #4f46e5; /* Cor principal ao passar o mouse */
+            --background-color: #f0f2f5; /* Cor de fundo geral */
+            --card-background-color: #ffffff; /* Cor de fundo dos cartões */
+            --text-color-dark: #1f2937; /* Cor de texto escuro */
+            --text-color-medium: #374151; /* Cor de texto médio */
+            --border-color: #d1d5db; /* Cor das bordas */
+            --accent-background-color: #e0e7ff; /* Cor de fundo de destaque (ex: user ID) */
+            --error-color: #ef4444; /* Cor de erro */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: var(--card-background-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover-color);
+        }
+        .form-input {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* Styles for checkboxes */
+        .genre-checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for checkboxes */
+            gap: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-height: 200px; /* Limit height and add scroll for many genres */
+            overflow-y: auto;
+            background-color: var(--card-background-color);
+        }
+        .genre-checkbox-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+            color: var(--text-color-medium);
+        }
+        .genre-checkbox-group input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: var(--primary-color); /* Highlight color for checked checkbox */
+        }
+
+        .genre-section {
+            margin-top: 2rem;
+            border-top: 2px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+        .genre-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-color-medium);
+            margin-bottom: 1rem;
+        }
+        .item-list {
+            display: grid;
+            gap: 1rem;
+        }
+        .item-card {
+            background-color: var(--background-color); /* Um pouco mais claro que o card principal */
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center; /* Alinha itens verticalmente ao centro */
+            gap: 1rem; /* Espaçamento entre imagem e texto */
+        }
+        .item-card-image {
+            width: 80px; /* Tamanho fixo da imagem */
+            height: 120px;
+            object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+            border-radius: 0.25rem;
+            flex-shrink: 0; /* Impede que a imagem encolha */
+        }
+        .item-details {
+            flex-grow: 1; /* Permite que os detalhes ocupem o espaço restante */
+        }
+        .item-title {
+            font-weight: 600;
+            color: var(--text-color-dark);
+        }
+        .item-genres {
+            color: #6b7280; /* Cor para os gêneros */
+            font-size: 0.875rem;
+        }
+        .item-rating {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            flex-shrink: 0; /* Impede que o rating encolha */
+        }
+        .user-id-display {
+            font-size: 0.875rem;
+            color: #6b7280;
+            word-break: break-all;
+            margin-top: 1rem;
+            text-align: center;
+            background-color: var(--accent-background-color);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .error-message {
+            color: var(--error-color);
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-6">Nosso Blog de Filmes e Séries 🍿🎬</h1>
+        <p class="user-id-display" id="userIdDisplay">Carregando ID do usuário...</p>
+
+        <!-- Formulário para Adicionar Filmes/Séries -->
+        <div class="card">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Adicionar Novo Título</h2>
+            <div id="errorMessage" class="error-message hidden mb-4"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="titleInput" class="block text-sm font-medium text-gray-700 mb-1">Título:</label>
+                    <input type="text" id="titleInput" class="form-input" placeholder="Nome do filme ou série" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Gênero(s):</label>
+                    <div id="genreCheckboxes" class="genre-checkbox-group">
+                        <!-- Checkboxes serão gerados aqui pelo JS -->
+                    </div>
+                </div>
+                <div>
+                    <label for="ratingSelect" class="block text-sm font-medium text-gray-700 mb-1">Sua Nota (0-10):</label>
+                    <!-- Escala de 0 a 10 -->
+                    <select id="ratingSelect" class="form-input">
+                        <option value="">Selecione uma Nota</option>
+                        <option value="0">0 ⭐</option>
+                        <option value="1">1 ⭐</option>
+                        <option value="2">2 ⭐⭐</option>
+                        <option value="3">3 ⭐⭐⭐</option>
+                        <option value="4">4 ⭐⭐⭐⭐</option>
+                        <option value="5">5 ⭐⭐⭐⭐⭐</option>
+                        <option value="6">6 ⭐⭐⭐⭐⭐⭐</option>
+                        <option value="7">7 ⭐⭐⭐⭐⭐⭐⭐</option>
+                        <option value="8">8 ⭐⭐⭐⭐⭐⭐⭐⭐</option>
+                        <option value="9">9 ⭐⭐⭐⭐⭐⭐⭐⭐⭐</option>
+                        <option value="10">10 ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</option>
+                    </select>
+                </div>
+                <!-- Novo campo para URL da imagem -->
+                <div class="col-span-1 md:col-span-2"> <!-- Ocupa duas colunas em telas maiores -->
+                    <label for="imageUrlInput" class="block text-sm font-medium text-gray-700 mb-1">URL da Imagem (opcional):</label>
+                    <input type="url" id="imageUrlInput" class="form-input" placeholder="http://exemplo.com/imagem.jpg" />
+                </div>
+            </div>
+            <button id="addEntryBtn" class="btn-primary w-full mt-6">Adicionar à Lista</button>
+        </div>
+
+        <!-- Lista de Filmes e Séries -->
+        <div class="card">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Minha Lista de Filmes e Séries</h2>
+            <div id="movieSeriesList">
+                <p class="text-gray-500 text-center">Nenhum título adicionado ainda.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Importa as funções necessárias do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variáveis globais para Firebase (fornecidas pelo ambiente Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db;
+        let auth;
+        let userId = null; // Armazena o ID do usuário autenticado ou anônimo
+
+        const titleInput = document.getElementById('titleInput');
+        const genreCheckboxesContainer = document.getElementById('genreCheckboxes');
+        const ratingSelect = document.getElementById('ratingSelect');
+        const imageUrlInput = document.getElementById('imageUrlInput'); // Novo campo para imagem
+        const addEntryBtn = document.getElementById('addEntryBtn');
+        const movieSeriesList = document.getElementById('movieSeriesList');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // Lista de todos os gêneros disponíveis para checkboxes
+        const ALL_GENRES = [
+            "Ação", "Aventura", "Comédia", "Drama", "Ficção Científica", "Fantasia",
+            "Terror", "Suspense", "Animação", "Documentário", "Romance", "Crime",
+            "Mistério", "Musical", "Esporte", "Histórico", "Guerra", "Faroeste",
+            "Biografia", "Infantil", "Outro"
+        ];
+
+        /**
+         * Exibe uma mensagem de erro na interface do usuário.
+         * @param {string} message A mensagem de erro a ser exibida.
+         */
+        function displayErrorMessage(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorMessageDiv.classList.add('hidden');
+                errorMessageDiv.textContent = '';
+            }, 5000); // Esconde a mensagem após 5 segundos
+        }
+
+        /**
+         * Gera dinamicamente os checkboxes para os gêneros.
+         */
+        function generateGenreCheckboxes() {
+            genreCheckboxesContainer.innerHTML = ''; // Limpa antes de gerar
+            ALL_GENRES.forEach(genre => {
+                const checkboxId = `genre-${genre.replace(/\s+/g, '-')}`; // Cria um ID único e válido
+                const label = document.createElement('label');
+                label.innerHTML = `
+                    <input type="checkbox" id="${checkboxId}" name="genre" value="${genre}" class="form-checkbox">
+                    ${genre}
+                `;
+                genreCheckboxesContainer.appendChild(label);
+            });
+        }
+
+        /**
+         * Inicializa o Firebase e a autenticação.
+         */
+        async function initializeFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Autentica o usuário com o token personalizado ou anonimamente
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Listener para mudanças no estado de autenticação
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplay.textContent = `Seu ID de Usuário: ${userId}`;
+                        console.log("Usuário autenticado:", userId);
+                        // Inicia o listener do Firestore somente após a autenticação
+                        setupFirestoreListener();
+                    } else {
+                        userId = crypto.randomUUID(); // Gera um ID aleatório para usuários não autenticados/anônimos
+                        userIdDisplay.textContent = `Seu ID de Usuário (Anônimo): ${userId}`;
+                        console.log("Usuário não autenticado, usando ID anônimo:", userId);
+                        setupFirestoreListener(); // Ainda configura o listener para IDs anônimos
+                    }
+                });
+                generateGenreCheckboxes(); // Gera os checkboxes na inicialização
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase ou autenticar:", error);
+                displayErrorMessage("Erro ao iniciar o aplicativo. Por favor, tente novamente.");
+            }
+        }
+
+        /**
+         * Configura o listener em tempo real para a coleção de filmes/séries.
+         * Os dados são armazenados de forma privada para cada usuário.
+         */
+        function setupFirestoreListener() {
+            if (!db || !userId) {
+                console.warn("Firestore não inicializado ou userId não disponível.");
+                return;
+            }
+
+            // Define o caminho da coleção para dados privados do usuário
+            const userMovieSeriesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/movieSeries`);
+
+            // Cria uma query para buscar todos os documentos para este usuário
+            const q = query(userMovieSeriesCollectionRef);
+
+            // Listener em tempo real para as mudanças na coleção
+            onSnapshot(q, (snapshot) => {
+                const movies = {}; // Objeto para agrupar por gênero
+
+                if (snapshot.empty) {
+                    movieSeriesList.innerHTML = '<p class="text-gray-500 text-center">Nenhum título adicionado ainda.</p>';
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // O gênero agora é um array, use o primeiro gênero para agrupar ou 'Desconhecido'
+                    const genres = Array.isArray(data.genre) ? data.genre : (data.genre ? [data.genre] : ["Desconhecido"]);
+                    
+                    // Se o item tiver múltiplos gêneros, ele aparecerá em cada seção de gênero relevante
+                    genres.forEach(genre => {
+                        if (!movies[genre]) {
+                            movies[genre] = [];
+                        }
+                        // Verifica se o item já foi adicionado a este gênero para evitar duplicação visual
+                        const exists = movies[genre].some(item => item.id === doc.id);
+                        if (!exists) {
+                            movies[genre].push({ id: doc.id, ...data });
+                        }
+                    });
+                });
+
+                renderMovieSeriesList(movies);
+            }, (error) => {
+                console.error("Erro ao carregar filmes/séries:", error);
+                displayErrorMessage("Erro ao carregar a lista de títulos. Por favor, recarregue a página.");
+            });
+        }
+
+        /**
+         * Renderiza a lista de filmes e séries agrupados por gênero.
+         * @param {object} movies Um objeto onde as chaves são os gêneros e os valores são arrays de filmes/séries.
+         */
+        function renderMovieSeriesList(movies) {
+            movieSeriesList.innerHTML = ''; // Limpa a lista existente
+
+            const sortedGenres = Object.keys(movies).sort(); // Ordena os gêneros
+
+            if (sortedGenres.length === 0) {
+                 movieSeriesList.innerHTML = '<p class="text-gray-500 text-center">Nenhum título adicionado ainda.</p>';
+                 return;
+            }
+
+            sortedGenres.forEach(genre => {
+                const genreSection = document.createElement('div');
+                genreSection.className = 'genre-section';
+                genreSection.innerHTML = `
+                    <h3 class="genre-title">${genre}</h3>
+                    <div class="item-list"></div>
+                `;
+                const itemListContainer = genreSection.querySelector('.item-list');
+
+                // Ordena os filmes/séries dentro de cada gênero por título
+                const sortedItems = movies[genre].sort((a, b) => a.title.localeCompare(b.title));
+
+                sortedItems.forEach(item => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'item-card';
+                    
+                    const imageUrl = item.imageUrl || `https://placehold.co/80x120/a8a8a8/ffffff?text=Sem+Imagem`; // Placeholder se não houver imagem
+                    
+                    // Exibe todos os gêneros do item, separados por vírgula
+                    const displayedGenres = Array.isArray(item.genre) ? item.genre.join(', ') : item.genre;
+                    itemCard.innerHTML = `
+                        <img src="${imageUrl}" alt="Capa de ${item.title}" class="item-card-image" onerror="this.onerror=null;this.src='https://placehold.co/80x120/a8a8a8/ffffff?text=Erro+Carregar';" />
+                        <div class="item-details">
+                            <span class="item-title">${item.title}</span><br>
+                            <span class="item-genres">${displayedGenres}</span>
+                        </div>
+                        <span class="item-rating">${item.rating} ⭐</span>
+                    `;
+                    itemListContainer.appendChild(itemCard);
+                });
+                movieSeriesList.appendChild(genreSection);
+            });
+        }
+
+        /**
+         * Adiciona um novo filme ou série ao Firestore.
+         */
+        addEntryBtn.addEventListener('click', async () => {
+            const title = titleInput.value.trim();
+            const selectedGenres = Array.from(document.querySelectorAll('#genreCheckboxes input[name="genre"]:checked'))
+                                       .map(checkbox => checkbox.value);
+            const rating = parseInt(ratingSelect.value, 10);
+            const imageUrl = imageUrlInput.value.trim(); // Coleta a URL da imagem
+
+            if (!title || selectedGenres.length === 0 || isNaN(rating) || rating < 0 || rating > 10) {
+                displayErrorMessage("Por favor, preencha o título, selecione pelo menos um gênero e uma nota válida (0-10).");
+                return;
+            }
+
+            if (!db || !userId) {
+                displayErrorMessage("O aplicativo não está totalmente inicializado. Por favor, aguarde ou recarregue a página.");
+                return;
+            }
+
+            try {
+                const userMovieSeriesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/movieSeries`);
+
+                await addDoc(userMovieSeriesCollectionRef, {
+                    title: title,
+                    genre: selectedGenres,
+                    rating: rating,
+                    imageUrl: imageUrl, // Salva a URL da imagem no Firestore
+                    timestamp: new Date(),
+                    userId: userId
+                });
+
+                // Limpa os campos após adicionar
+                titleInput.value = '';
+                document.querySelectorAll('#genreCheckboxes input[name="genre"]:checked').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                ratingSelect.value = '';
+                imageUrlInput.value = ''; // Limpa o campo da imagem
+                displayErrorMessage("");
+            } catch (e) {
+                console.error("Erro ao adicionar documento: ", e);
+                displayErrorMessage("Erro ao adicionar o título. Por favor, tente novamente.");
+            }
+        });
+
+        // Inicializa o Firebase ao carregar a janela
+        window.onload = initializeFirebase;
+    </script>
+</body>
+</html>
