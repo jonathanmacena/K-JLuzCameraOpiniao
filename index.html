@@ -213,6 +213,23 @@
 
         // Variáveis globais para Firebase (fornecidas pelo ambiente Canvas)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // IMPORTANTE: Se você estiver hospedando este blog fora do ambiente Canvas (ex: GitHub Pages),
+        // VOCÊ PRECISA SUBSTITUIR O `{}` ABAIXO PELA CONFIGURAÇÃO REAL DO SEU PROJETO FIREBASE.
+        // Você pode encontrar essa configuração em seu console do Firebase:
+        // Console do Firebase -> Seu Projeto -> Configurações do Projeto (ícone de engrenagem)
+        // -> Seus aplicativos -> Selecione seu aplicativo web (o ícone `</>`) -> Configuração.
+        // Exemplo (descomente e preencha com seus dados, removendo o `typeof __firebase_config...`):
+        /*
+        const firebaseConfig = {
+          apiKey: "SUA_API_KEY",
+          authDomain: "SEU_AUTH_DOMAIN",
+          projectId: "SEU_PROJECT_ID",
+          storageBucket: "SEU_STORAGE_BUCKET",
+          messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+          appId: "SEU_APP_ID"
+          // measurementId: "SEU_MEASUREMENT_ID" // Opcional, se você usa Analytics
+        };
+        */
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -222,7 +239,6 @@
         let userId = null; // Armazena o ID do usuário autenticado ou anônimo
 
         const titleInput = document.getElementById('titleInput');
-        // A variável genreCheckboxesContainer foi removida da declaração global
         const ratingSelect = document.getElementById('ratingSelect');
         const imageUrlInput = document.getElementById('imageUrlInput'); // Novo campo para imagem
         const addEntryBtn = document.getElementById('addEntryBtn');
@@ -255,10 +271,10 @@
          * Gera dinamicamente os checkboxes para os gêneros.
          */
         function generateGenreCheckboxes() {
-            console.log("Generating genre checkboxes..."); // Para depuração
+            console.log("Gerando checkboxes de gênero...");
             const genreCheckboxesContainer = document.getElementById('genreCheckboxes'); // Obtém o elemento aqui
             if (!genreCheckboxesContainer) {
-                console.error("Container para os checkboxes de gênero não encontrado!");
+                console.error("ERRO: Container para os checkboxes de gênero não encontrado!");
                 displayErrorMessage("Erro: Não foi possível encontrar a seção de gêneros.");
                 return;
             }
@@ -272,7 +288,7 @@
                 `;
                 genreCheckboxesContainer.appendChild(label);
             });
-            console.log("Genre checkboxes generated."); // Para depuração
+            console.log("Checkboxes de gênero gerados.");
         }
 
         /**
@@ -280,15 +296,19 @@
          */
         async function initializeFirebase() {
             try {
+                // Tenta inicializar com a configuração fornecida pelo Canvas ou com a vazia
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                console.log("Firebase app inicializado com sucesso.");
 
                 // Autentica o usuário com o token personalizado ou anonimamente
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Autenticado com token personalizado.");
                 } else {
                     await signInAnonymously(auth);
+                    console.log("Autenticado anonimamente.");
                 }
 
                 // Listener para mudanças no estado de autenticação
@@ -296,20 +316,21 @@
                     if (user) {
                         userId = user.uid;
                         userIdDisplay.textContent = `Seu ID de Usuário: ${userId}`;
-                        console.log("Usuário autenticado:", userId);
+                        console.log("Estado de autenticação mudou. Usuário ID:", userId);
                         // Inicia o listener do Firestore somente após a autenticação
                         setupFirestoreListener();
                     } else {
+                        // Isso pode acontecer se signInAnonymously falhar ou se o usuário sair
                         userId = crypto.randomUUID(); // Gera um ID aleatório para usuários não autenticados/anônimos
                         userIdDisplay.textContent = `Seu ID de Usuário (Anônimo): ${userId}`;
-                        console.log("Usuário não autenticado, usando ID anônimo:", userId);
+                        console.log("Estado de autenticação mudou. Usuário não autenticado, usando ID anônimo:", userId);
                         setupFirestoreListener(); // Ainda configura o listener para IDs anônimos
                     }
                 });
                 generateGenreCheckboxes(); // Gera os checkboxes na inicialização
             } catch (error) {
-                console.error("Erro ao inicializar Firebase ou autenticar:", error);
-                displayErrorMessage("Erro ao iniciar o aplicativo. Por favor, tente novamente.");
+                console.error("ERRO GRAVE ao inicializar Firebase ou autenticar:", error);
+                displayErrorMessage(`Erro ao iniciar o aplicativo: ${error.message}. Verifique o console para mais detalhes.`);
             }
         }
 
@@ -319,7 +340,7 @@
          */
         function setupFirestoreListener() {
             if (!db || !userId) {
-                console.warn("Firestore não inicializado ou userId não disponível.");
+                console.warn("Firestore não inicializado ou userId não disponível para listener.");
                 return;
             }
 
@@ -358,7 +379,7 @@
 
                 renderMovieSeriesList(movies);
             }, (error) => {
-                console.error("Erro ao carregar filmes/séries:", error);
+                console.error("ERRO ao carregar filmes/séries:", error);
                 displayErrorMessage("Erro ao carregar a lista de títulos. Por favor, recarregue a página.");
             });
         }
