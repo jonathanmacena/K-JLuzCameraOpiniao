@@ -206,21 +206,27 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        // Importa as funções necessárias do Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-        // Variáveis globais para Firebase (fornecidas pelo ambiente Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
   apiKey: "AIzaSyA38qOyovPWW3o8KGwKrOKGBNp-vcBgQ8c",
   authDomain: "k-jluzcameraopiniao.firebaseapp.com",
   projectId: "k-jluzcameraopiniao",
   storageBucket: "k-jluzcameraopiniao.firebasestorage.app",
   messagingSenderId: "226870511707",
   appId: "1:226870511707:web:e40e28dc2f9ee3a385577e",
-  measurementId: "G-P1CCXSSKHM"   
+  measurementId: "G-P1CCXSSKHM"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
     
         const firebaseConfig = {
   apiKey: "AIzaSyA38qOyovPWW3o8KGwKrOKGBNp-vcBgQ8c",
