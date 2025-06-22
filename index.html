@@ -222,7 +222,7 @@
         let userId = null; // Armazena o ID do usuário autenticado ou anônimo
 
         const titleInput = document.getElementById('titleInput');
-        const genreCheckboxesContainer = document.getElementById('genreCheckboxes');
+        // A variável genreCheckboxesContainer foi removida da declaração global
         const ratingSelect = document.getElementById('ratingSelect');
         const imageUrlInput = document.getElementById('imageUrlInput'); // Novo campo para imagem
         const addEntryBtn = document.getElementById('addEntryBtn');
@@ -255,6 +255,13 @@
          * Gera dinamicamente os checkboxes para os gêneros.
          */
         function generateGenreCheckboxes() {
+            console.log("Generating genre checkboxes..."); // Para depuração
+            const genreCheckboxesContainer = document.getElementById('genreCheckboxes'); // Obtém o elemento aqui
+            if (!genreCheckboxesContainer) {
+                console.error("Container para os checkboxes de gênero não encontrado!");
+                displayErrorMessage("Erro: Não foi possível encontrar a seção de gêneros.");
+                return;
+            }
             genreCheckboxesContainer.innerHTML = ''; // Limpa antes de gerar
             ALL_GENRES.forEach(genre => {
                 const checkboxId = `genre-${genre.replace(/\s+/g, '-')}`; // Cria um ID único e válido
@@ -265,6 +272,7 @@
                 `;
                 genreCheckboxesContainer.appendChild(label);
             });
+            console.log("Genre checkboxes generated."); // Para depuração
         }
 
         /**
