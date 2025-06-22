@@ -206,7 +206,38 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-  const firebaseConfig = {
+        // Importa as funções necessárias do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variáveis globais para Firebase (fornecidas pelo ambiente Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // ***** INÍCIO DA SEÇÃO CRÍTICA PARA CONFIGURAÇÃO DO FIREBASE *****
+        //
+        //    >>>>>>    
+  apiKey: "AIzaSyA38qOyovPWW3o8KGwKrOKGBNp-vcBgQ8c",
+  authDomain: "k-jluzcameraopiniao.firebaseapp.com",
+  projectId: "k-jluzcameraopiniao",
+  storageBucket: "k-jluzcameraopiniao.firebasestorage.app",
+  messagingSenderId: "226870511707",
+  appId: "1:226870511707:web:e40e28dc2f9ee3a385577e",
+  measurementId: "G-P1CCXSSKHM"   <<<<<<
+        //
+        // IMPORTANTE: Se você estiver hospedando este blog fora do ambiente Canvas (ex: GitHub Pages),
+        // VOCÊ PRECISA SUBSTITUIR A LINHA `const firebaseConfig = ...` LOGO ABAIXO
+        // PELA CONFIGURAÇÃO REAL DO SEU PROJETO FIREBASE.
+        //
+        // Você pode encontrar essa configuração em seu console do Firebase:
+        // Console do Firebase -> Seu Projeto -> Configurações do Projeto (ícone de engrenagem)
+        // -> Seus aplicativos -> Selecione seu aplicativo web (o ícone `</>`) -> Configuração.
+        //
+        // COPIE E COLE O OBJETO INTEIRO AQUI, SUBSTITUINDO A LINHA ABAIXO.
+        //
+        // Exemplo de como DEVE FICAR, COM SEUS PRÓPRIOS VALORES:
+        /*
+        const firebaseConfig = {
   apiKey: "AIzaSyA38qOyovPWW3o8KGwKrOKGBNp-vcBgQ8c",
   authDomain: "k-jluzcameraopiniao.firebaseapp.com",
   projectId: "k-jluzcameraopiniao",
@@ -214,26 +245,15 @@
   messagingSenderId: "226870511707",
   appId: "1:226870511707:web:e40e28dc2f9ee3a385577e",
   measurementId: "G-P1CCXSSKHM"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-          apiKey: "SUA_API_KEY",
-          authDomain: "SEU_AUTH_DOMAIN",
-          projectId: "SEU_PROJECT_ID",
-          storageBucket: "SEU_STORAGE_BUCKET",
-          messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-          appId: "SEU_APP_ID"
-          // measurementId: "SEU_MEASUREMENT_ID" // Opcional, se você usa Analytics
+          // measurementId: "SEU_MEASUREMENT_ID_AQUI" // Opcional, se você usa Analytics
         };
         */
+        // SE ESTIVER TESTANDO NO AMBIENTE CANVAS, DEIXE A LINHA ORIGINAL.
+        // SE ESTIVER NO GITHUB PAGES, DESCOMENTE A ESTRUTURA ACIMA E PREENCHA COM SEUS DADOS REAIS.
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        // ***** FIM DA SEÇÃO CRÍTICA PARA CONFIGURAÇÃO DO FIREBASE *****
+
+
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let app;
